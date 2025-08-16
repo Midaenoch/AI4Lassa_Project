@@ -26,7 +26,7 @@ selected_features = [
 user_input = {}
 with st.expander("🔢 Input Features"):
     for feature in selected_features:
-        user_input[feature] = st.number_input(f"{feature}", format="%.6f")
+        user_input[feature] = st.number_input(f"{feature}", format="%.1f")
 # Predict
 if st.button("Predict"):
     try:
@@ -55,6 +55,7 @@ if st.button("Predict"):
 
     except Exception as e:
         st.error(f"Prediction failed: {e}")
+
 
 
 
