@@ -4,10 +4,10 @@ import numpy as np
 import pandas as pd
 
 # Load model and scaler
-with open("svm_model.pkl", "rb") as f:
+with open("models/svm_model.pkl", "rb") as f:
     model = pickle.load(f)
 
-with open("scaler.pkl", "rb") as f:
+with open("models/scaler.pkl", "rb") as f:
     scaler = pickle.load(f)
 
 st.title("AI4Lassa Prediction App")
@@ -54,4 +54,5 @@ if st.button("Predict"):
 
     except Exception as e:
         st.error(f"Prediction failed: {e}")
+
 
