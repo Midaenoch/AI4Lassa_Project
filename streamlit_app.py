@@ -10,7 +10,8 @@ with open("models/svm_model.pkl", "rb") as f:
 with open("models/scaler.pkl", "rb") as f:
     scaler = pickle.load(f)
 
-st.title("AI4Lassa Prediction App")
+st.title("🧪 AI4Lassa Fever Outbreak Prediction App")
+st.markdown("Enter epidemiological and environmental data to predict potential Lassa Fever outbreaks.")
 
 selected_features = [
     'Cases', 'Any_Confirmed_Cases', 'Reports_All', 'LGA_Mean_Cases',
@@ -23,9 +24,9 @@ selected_features = [
 
 # Collect inputs
 user_input = {}
-for feature in selected_features:
-    user_input[feature] = st.number_input(f"Enter {feature}:")
-
+with st.expander("🔢 Input Features"):
+    for feature in selected_features:
+        user_input[feature] = st.number_input(f"{feature}", format="%.6f")
 # Predict
 if st.button("Predict"):
     try:
@@ -54,5 +55,6 @@ if st.button("Predict"):
 
     except Exception as e:
         st.error(f"Prediction failed: {e}")
+
 
 
