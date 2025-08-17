@@ -1,27 +1,3 @@
-Got it! You're using **Streamlit** to build a **Lassa Fever prediction app** that currently accepts **manual inputs** for multiple features.
-
-Now you want to **replace the manual number inputs** with an option for **users to upload a CSV or Excel file**, and then have the app:
-
-1. Read the file,
-2. Extract the features,
-3. Run the prediction on the data,
-4. Show the results.
-
----
-
-### ✅ Here's How You Can Add File Upload to Your Streamlit App
-
-I’ll give you a **modified version** of your code that includes:
-
-* A file uploader (`st.file_uploader`)
-* Logic to handle uploaded data
-* Optional fallback to manual entry if no file is uploaded
-
----
-
-### 🆕 Updated Streamlit Code (with file upload support)
-
-```python
 import streamlit as st
 import pickle
 import numpy as np
@@ -111,24 +87,5 @@ if st.button("Predict"):
 
     except Exception as e:
         st.error(f"Prediction failed: {e}")
-```
 
----
 
-### ✅ Features of This Update:
-
-* Accepts **file upload** (CSV or Excel)
-* Extracts relevant columns
-* Validates missing fields
-* Still supports **manual entry** as a backup
-* Shows prediction results row-by-row if multiple entries are uploaded
-
----
-
-Would you like:
-
-* A **template CSV file** for users to download?
-* To **display probabilities** or prediction confidence?
-* Help **deploying this version** (e.g., on Streamlit Cloud)?
-
-Let me know and I’ll assist!
