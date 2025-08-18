@@ -32,7 +32,7 @@ manual_input = {}
 if st.button("Predict"):
     try:
         if uploaded_file is not None:
-            input_data = uploaded_file_data[selected_features].copy()
+            input_data = uploaded_file[selected_features].copy()
 
         else:
             input_data = pd.DataFrame([manual_input])
@@ -61,5 +61,6 @@ if st.button("Predict"):
 
     except Exception as e:
         st.error(f"Prediction failed: {e}")
+
 
 
