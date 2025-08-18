@@ -32,7 +32,19 @@ manual_input = {}
 if st.button("Predict"):
     try:
         if uploaded_file is not None:
-            input_data = uploaded_file[selected_features].copy()
+            # Read file using pandas
+            if uploaded_file.name.endswith('.csv'):
+                df = pd.read_csv(uploaded_file)
+            else:
+                df = pd.read_excel(uploaded_file)
+
+            # Validate required columns
+            missing_cols = [col for col in selected_features if col not in df.columns]
+            if missing_cols:
+                st.error(f"Missing columns: {', '.join(missing_cols)}")
+                st.stop()
+
+            input_data = df[selected_features].copy()
 
         else:
             input_data = pd.DataFrame([manual_input])
@@ -41,26 +53,23 @@ if st.button("Predict"):
         scaled_input = scaler.transform(input_data)
         predictions = model.predict(scaled_input)
 
-        # Add predictions to the dataframe
+        # Add prediction info
         input_data["Prediction"] = predictions
         input_data["Status"] = input_data["Prediction"].apply(lambda x: "🦠 Outbreak" if x == 1 else "✅ No Outbreak")
         input_data["Recommendation"] = input_data["Prediction"].apply(
             lambda x: "Alert Health Authorities" if x == 1 else "Continue Monitoring"
         )
 
-        # Optional: Add a placeholder for "State" column if you don't have one yet
+        # Optional state label
         input_data.insert(0, "State", [f"State {i+1}" for i in range(len(input_data))])
 
-        # Show the table
+        # Display table
         st.markdown("### 📊 Prediction Results")
         st.dataframe(input_data[["State", "Status", "Recommendation"]])
 
-        # Optional: Allow download
+        # Download button
         csv = input_data.to_csv(index=False).encode('utf-8')
         st.download_button("📥 Download Results as CSV", data=csv, file_name="lassa_predictions.csv", mime="text/csv")
 
     except Exception as e:
         st.error(f"Prediction failed: {e}")
-
-
-
