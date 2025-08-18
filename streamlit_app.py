@@ -29,63 +29,34 @@ uploaded_file = st.file_uploader("📤 Upload CSV or Excel file", type=["csv", "
 # 2. Manual fallback
 manual_input = {}
 
-if uploaded_file is not None:
-    try:
-        if uploaded_file.name.endswith('.csv'):
-            data = pd.read_csv(uploaded_file)
-        else:
-            data = pd.read_excel(uploaded_file)
-
-        # Validate columns
-        missing_cols = [col for col in selected_features if col not in data.columns]
-        if missing_cols:
-            st.error(f"Missing columns in uploaded file: {', '.join(missing_cols)}")
-            st.stop()
-
-        st.success("✅ File uploaded and verified successfully!")
-        st.dataframe(data[selected_features].head())
-
-    except Exception as e:
-        st.error(f"Error reading file: {e}")
-        st.stop()
-
-else:
-    st.info("Or manually enter input data below 👇")
-    with st.expander("🔢 Manual Input Features"):
-        for feature in selected_features:
-            manual_input[feature] = st.number_input(f"{feature}", format="%.2f")
-
-# 3. Prediction button
 if st.button("Predict"):
     try:
         if uploaded_file is not None:
-            input_data = data[selected_features]
+            input_data = data[selected_features].copy()
         else:
             input_data = pd.DataFrame([manual_input])
 
+        # Make predictions
         scaled_input = scaler.transform(input_data)
         predictions = model.predict(scaled_input)
 
-        for i, pred in enumerate(predictions):
-            st.markdown(f"### 📍 Prediction for Row {i+1}:")
-            if pred == 1:
-                st.markdown(
-                    """
-                    #### 🦠 **Outbreak Detected**
-                    - ⚠️ A potential **Lassa Fever outbreak** is likely.
-                    - 🏥 Please inform relevant health bodies.
-                    """
-                )
-            else:
-                st.markdown(
-                    """
-                    #### ✅ **No Outbreak**
-                    - 👍 No indication of an outbreak.
-                    - 🧼 Maintain hygiene and monitoring.
-                    """
-                )
+        # Add predictions to the dataframe
+        input_data["Prediction"] = predictions
+        input_data["Status"] = input_data["Prediction"].apply(lambda x: "🦠 Outbreak" if x == 1 else "✅ No Outbreak")
+        input_data["Recommendation"] = input_data["Prediction"].apply(
+            lambda x: "Alert Health Authorities" if x == 1 else "Continue Monitoring"
+        )
+
+        # Optional: Add a placeholder for "State" column if you don't have one yet
+        input_data.insert(0, "State", [f"State {i+1}" for i in range(len(input_data))])
+
+        # Show the table
+        st.markdown("### 📊 Prediction Results")
+        st.dataframe(input_data[["State", "Status", "Recommendation"]])
+
+        # Optional: Allow download
+        csv = input_data.to_csv(index=False).encode('utf-8')
+        st.download_button("📥 Download Results as CSV", data=csv, file_name="lassa_predictions.csv", mime="text/csv")
 
     except Exception as e:
         st.error(f"Prediction failed: {e}")
-
-
